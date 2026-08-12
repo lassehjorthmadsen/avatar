@@ -1,5 +1,17 @@
 # SKILL — Building the Avatar UI from this design system
 
+> **SUPERSEDED IN PART — the UI is already built.** This copy of
+> the app was deliberately re-themed to match the light, serif Quarto site it is
+> embedded in: white surfaces, Georgia prose, system-sans chrome, no webfonts,
+> light default. **Do not follow the dark/navy, Newsreader-and-Hanken-Grotesk
+> instructions below to "fix" the UI — that would undo intentional work.**
+> `CLAUDE.md` in the project root is authoritative on appearance.
+>
+> What remains genuinely useful here: the component structure and class
+> reference, the interaction contracts in `docs/ux-flows.md`, the states matrix,
+> the accessibility notes, and the rule that **yellow is reserved exclusively for
+> the human-in-the-loop**.
+
 > This is the **design + front-end build brief** for the Avatar platform. It tells you
 > (Claude Code) how to turn this design system into the real product UI.
 >

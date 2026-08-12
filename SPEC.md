@@ -1,4 +1,14 @@
-# Avatar - Spec
+# Avatar - Behavioural Reference
+
+> **The app described here is built, deployed and live.** This document began as
+> the build brief; it is kept as the reference for *what the product does and
+> why*. Its numbered **Questions and Answers** entries are cited from code
+> comments and tests (e.g. "SPEC Q&A #4"), so the numbering is load-bearing —
+> don't renumber them.
+>
+> It is **not** a to-do list, and not an instruction to rebuild. For how to work
+> on the project — environment gotchas, deploy rules, and where the shipped UI
+> intentionally departs from `design-system/` — see **`CLAUDE.md`**.
 
 ## Introduction
 
@@ -92,6 +102,19 @@ The image in knowledge/pic.jpg should be used for the Avatar icon for the Human,
 
 A complete, build-ready visual and interaction system has been provided in the `design-system/` directory (produced by the sister product Claude Design). It pairs with this SPEC. The split is explicit: **SPEC.md governs behaviour and the backend; `design-system/` governs look and feel.** When the two disagree, SPEC wins on behaviour, the design system wins on appearance.
 
+> **Superseded in this instance.** The design system below is dark-first navy
+> with a cyan HUD treatment. This copy of the app is embedded in a light, serif
+> Quarto site and was deliberately re-themed to match its host: white surfaces,
+> Georgia prose, system-sans chrome, Bootstrap-blue links, and no webfonts. Dark
+> mode still works via the toggle, and `design-system/` is retained as the
+> upstream reference and as documentation of that dark theme.
+>
+> The parts below that still hold are the **interaction contracts** in
+> `docs/ux-flows.md`, the component structure, and — above all — that **yellow
+> is reserved exclusively for the human-in-the-loop**. Read the appearance
+> specifics (dark default, the three Google Fonts, navy surfaces) as history.
+> `CLAUDE.md` is authoritative on appearance.
+
 ### Structure of `design-system/`
 
 - **`Avatar Design System.html`** - the navigable design-system document (it dogfoods its own tokens). Open this rendered first.
@@ -107,17 +130,30 @@ A complete, build-ready visual and interaction system has been provided in the `
 
 ### Design language
 
+*(As originally specified — superseded on surfaces and type, see above.)*
 Dark-first, navy-tinted surfaces; editorial serif **Newsreader** (display) + crisp grotesque **Hanken Grotesk** (UI) + **JetBrains Mono** (technical layer); **blue-led** identity with **yellow as the "spark" reserved for the human-in-the-loop**, and **purple locked to primary actions only**. No gradients in chrome, no purple wash, no left-edge accent bars, no emoji. This matches the SPEC palette and the "not a generic chatbot" mandate.
+
+**Still in force:** blue-led identity, **yellow reserved for the
+human-in-the-loop**, no gradients in chrome, no purple wash, no left-edge accent
+bars, no emoji. **Changed:** surfaces are white rather than dark navy, and the
+type is Georgia (prose) plus system sans (chrome) rather than the three
+webfonts.
 
 ### How to use it in the build
 
-The frontend is vanilla TypeScript + Vite (per SPEC). Copy `tokens.css`, `components.css`, `icons.svg` and `assets/` into the frontend; load order is `tokens.css` -> `components.css` -> page CSS; import the Google Fonts (Newsreader, Hanken Grotesk, JetBrains Mono). Build the two screens by composing the component classes and lifting the markup from the mockups, which are the tie-breaker for any ambiguity. Default theme is dark, persisted (the mockups use `localStorage['avatar-theme']`). Do not invent new colours - derive from tokens.
+The frontend is vanilla TypeScript + Vite (per SPEC). `tokens.css`, `components.css`, `icons.svg` and `assets/` live in the frontend; load order is `tokens.css` -> `components.css` -> page CSS. The two screens compose the component classes, with the mockups as the tie-breaker for any structural ambiguity. Theme is persisted in `localStorage['avatar-theme']`. Do not invent new colours - derive from tokens.
+
+*As built, this instance differs from the original brief in two ways (see the
+Superseded note above): the **default theme is light**, not dark, and the three
+Google Fonts were **removed** in favour of Georgia plus the system sans stack, to
+match the host site. Note that no themed token has a `:root` fallback, so
+`<html>` must always carry a `data-theme` attribute.*
 
 ### Notes
 
 - The design system says "no left-edge accent bars," yet `.convo-item.is-active::before` in `components.css` draws a small left bar on the *active admin inbox row*. This is acceptable: that rule is about message/content panels (and is honoured on the human bubble); the inbox bar is a selection indicator. Follow the mockups.
 - Treat the shipped PNGs in `assets/` as the source of truth for the avatar images rather than re-deriving them. The `avatar-robot*.png` files resolve the earlier open question about providing the robotic icon.
-- **Owner-specific regeneration:** these assets, copy, and identity are currently built for the default owner (Ed). If someone *other than Ed* stands up their own site, the build must be updated end to end for that person - including regenerating the Avatar images from their own `knowledge/pic.jpg` (per the recipe in `design-system/docs/avatar-generation.md`), and updating the human photo, brand subtitle, and any owner-specific copy. The owner's name comes from the `OWNER_NAME` env var and is shown in the UI (including the human bubble, e.g. "Ed Donner - live"); it must always be read from that config and never hardcoded (per Q&A #4 and #11).
+- **Owner-specific regeneration:** the assets in `design-system/assets/` are the upstream template's, built for its original owner. **This instance has already been regenerated for its own owner** — `knowledge/` and `frontend/public/assets/` are the live, owner-specific versions; `design-system/assets/` is left untouched as the upstream reference. Anyone standing up a *further* copy must redo that end to end: regenerate the Avatar images from their own `knowledge/pic.jpg` (run `node scripts/generate-avatars.mjs`), and update the human photo, brand subtitle, footer social links, and any owner-specific copy. The owner's name comes from the `OWNER_NAME` env var and is shown in the UI (including the human bubble, e.g. "<owner> - live"); it must always be read from that config and never hardcoded (per Q&A #4 and #11).
 
 ## Testing
 
@@ -127,11 +163,17 @@ Testing is absolutely crucial for the success of this project.
 2. Rigorously test the frontend. Use Playwright, take multiple screenshots. Ensure everything works in significant detail.
 3. Build the Docker container and test everything end to end; very comprehensively
 
-You should write comprehensive test plans for each of these, document the test plans in the test/ directory with checkboxes, and then check them off.
+Test plans live in `test/` with checkboxes, kept checked off as work lands.
 
-NOTE: It's good to use the model and pushover as part of your testing, but change the model to gpt-5.4-nano to reduce costs. Then it's fine to call the LLM for tests and to write test conversations in the Supabase database. There are sensible rate limits on the OpenRouter key; you can use it as much as you wish.
+It's fine to call the real LLM and Pushover in testing, and to write test
+conversations to Supabase — set `MODEL` to `openai/gpt-5.4-nano` to keep the cost
+negligible. **Afterwards, delete the screenshots and the test conversation rows
+from Supabase**, and update the plan's checkboxes.
 
-When you've completed testing, delete the screenshots and delete the test conversation threads in Supabase, and check off the items in your test plans.
+*As built: `test/TEST_PLAN.md` plus `test/e2e.spec.ts` (16 Playwright tests).
+Because a TLS-inspecting proxy can break local LLM and database access (see
+`CLAUDE.md`), the e2e suite runs against a deployed URL —
+`BASE_URL=https://<your-app>.fly.dev npx playwright test` — not localhost.*
 
 ## Setup and Validation
 
@@ -149,13 +191,21 @@ Before running or developing the app, the environment must be set up and validat
 
 ## Success Criteria
 
-The project is only successful when you can run the script to build the container, then run the application end-to-end, carry out full testing with the user, avatar and human participating (and multiple users with different conversation_ids). The tests should include multiple screenshots. The tests should be fully documented in the test/ folder. Only conclude the project when your extensive testing is completed and working well and looking great.
+*(Met. Retained as the bar any substantial change should still clear.)*
+
+The container builds and the application runs end to end, with full testing
+covering the visitor, avatar and human all participating, across multiple
+conversation_ids. Testing is documented in `test/`.
 
 ## Questions and Answers
 
-Clarifications agreed before starting work:
+Clarifications agreed before the original build. **These are cited by number
+from code comments and tests (e.g. "SPEC Q&A #4" in `backend/app/routes/chat.py`
+and `test/e2e.spec.ts`), so the numbering must not change.** They record *why*
+several non-obvious behaviours exist — read them before changing the
+human-in-the-loop, read/unread, or auth logic.
 
-1. **Supabase credentials.** Not yet in `.env`. Setting up the Supabase project (and adding `SUPABASE_URL` + service key) is the first task we do together, before building.
+1. **Supabase credentials.** Live in `.env` (gitignored and `.dockerignore`d), never in the repo. *(Originally: "not yet in `.env`" — setting up the Supabase project was the first task, before building. It is done; `README.md` has the steps for a fresh copy.)*
 
 2. **Model.** The model name is read from the `MODEL` env var (OpenRouter `openai/...` prefix). `openai/gpt-5.4-nano` is the cheap default for development and testing (and the code default in `config.py`); the reference production deployment uses `openai/gpt-5.4-mini`. Each owner sets their own.
 
