@@ -1,0 +1,32 @@
+# Never bake secrets into the image
+.env
+.env.*
+
+# Python caches and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+backend/.venv/
+
+# Node development artifacts (frontend dist is built inside Docker)
+frontend/node_modules/
+frontend/.vite/
+
+# Git and tooling
+.git/
+.gitignore
+.claude/
+
+# Test artefacts
+test/
+backend/tests/
+*.log
+
+# macOS
+.DS_Store
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp

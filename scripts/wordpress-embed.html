@@ -1,0 +1,55 @@
+<!-- Avatar Embed — paste into a WordPress "Custom HTML" block.
+     Change two values:
+       BASE  → your Avatar subdomain, e.g. https://avatar.yourdomain.com
+       title → your own name (for screen-reader accessibility)
+
+     The snippet:
+       • Renders the iframe full-bleed below the site nav
+       • Overrides the theme's content-column max-width so it fills the viewport
+       • Guards against horizontal scroll on narrow screens
+       • Forwards ?q=N from the host page URL into the iframe (so a link like
+         yoursite.com/avatar?q=2 will open the page and immediately answer Q2)
+-->
+<style>
+  /* Full-bleed: break out of the theme's content column */
+  .avatar-embed-wrap {
+    position: relative;
+    left: 50%;
+    right: 50%;
+    width: 100vw;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    overflow-x: hidden; /* guard against horizontal scroll on narrow screens */
+  }
+
+  .avatar-embed-wrap iframe {
+    display: block;
+    width: 100%;
+    height: 90vh;      /* adjust to taste */
+    min-height: 600px;
+    border: none;
+  }
+</style>
+
+<div class="avatar-embed-wrap">
+  <iframe
+    id="avatar-iframe"
+    src=""
+    title="Digital Twin Avatar"
+    allow="clipboard-write"
+    loading="lazy"
+  ></iframe>
+</div>
+
+<script>
+(function () {
+  var BASE = "https://avatar-ed.fly.dev"; // <-- change to your subdomain
+
+  // Forward ?q=N from the host page into the iframe src
+  var hostParams = new URLSearchParams(window.location.search);
+  var q = hostParams.get("q");
+  var src = BASE + (q ? "/?q=" + encodeURIComponent(q) : "/");
+
+  document.getElementById("avatar-iframe").src = src;
+})();
+</script>
