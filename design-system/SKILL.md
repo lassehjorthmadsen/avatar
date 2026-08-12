@@ -146,9 +146,11 @@ Target: `mockups/Admin Dashboard.html`. Cross-check SPEC §"Human Admin Experien
 
 - `avatar-human.png` is the owner's real photo (square crop of `knowledge/pic.jpg`). Natural,
   never stylised. In the chat it gets a **yellow ring** (`.avatar-human`) when the human is live.
-- `avatar-robot*.png` is the **synthetic twin**: the same face rebuilt as cool chrome (navy→cyan
-  duotone, posterised paneling, scanlines, glowing eyes, HUD brackets). This is the **Avatar's**
-  identity everywhere, ringed cyan-blue (`.avatar-twin`).
+- `avatar-robot*.png` is the **twin**. *(Superseded: this originally called for cool chrome —
+  navy→cyan duotone, posterised paneling, scanlines, glowing eyes, HUD brackets. As built the twin
+  is the same natural photo, framed slightly differently; the tinted versions read as a filter
+  rather than a twin.)* This is the **Avatar's** identity everywhere, ringed blue (`.avatar-twin`)
+  against the human's yellow.
 - **Regenerate per owner:** the twin is produced programmatically from `pic.jpg` — see
   `docs/avatar-generation.md` for the exact recipe so a different site owner gets a matching twin.
 

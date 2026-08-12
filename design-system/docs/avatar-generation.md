@@ -1,13 +1,15 @@
 # Avatar generation recipe
 
-The Avatar's icon is the owner's real photo (`knowledge/pic.jpg`) rebuilt as a **synthetic digital
-twin**. It is produced programmatically so any site owner gets a matching twin from their own photo.
-Three files are produced into `assets/`:
+The Avatar's icon is derived from the owner's real photo (`knowledge/pic.jpg`). It is produced
+programmatically so any site owner gets a matching set from their own photo. Three files are
+produced into `assets/`:
 
-- `avatar-human.png` — natural square crop of the real photo (the **human** icon).
-- `avatar-robot.png` — the twin, square, with a HUD frame (hero / showcase use).
-- `avatar-robot-round.png` — the twin tuned for circular chat avatars (inner ring, vignette,
-  no corner brackets).
+- `avatar-human.png` — square crop of the real photo (the **human** icon).
+- `avatar-robot.png` — the twin, square, framed slightly wider (hero / showcase use).
+- `avatar-robot-round.png` — the twin, cropped tightest for circular chat avatars.
+
+**All three are natural colour**; they differ only in framing. The twin and the human are
+distinguished by their rings — see "Twin treatment" below.
 
 ## Generating them
 
@@ -35,23 +37,26 @@ perfectly legible in the chat.
 Square, centred on the face, with the eyes at ≈44% from the top. Downscaling is done by repeated
 halving — a single >13× `drawImage` step aliases badly.
 
-## Twin treatment (restrained blue duotone)
-1. **Duotone** the cropped face through a deep-navy → link-blue → near-white ramp
-   (`#0a1c38 → #1e4585 → #4582ec → #9dc0f5 → #f4f8fe`). The midtone is the host site's own link
-   blue, which is what ties the twin to the page.
-2. **Smooth then posterise** luminance — box-blur radius 3 to kill JPEG speckle and skin texture,
-   then quantise to ~22 bands. Blur too little or band too coarsely and the face breaks into
-   blotches rather than deliberate contours.
-3. **Vignette** toward the deep shadow so a busy real-world backdrop recedes and the face carries
-   the icon at 40px. The round variant vignettes hard (0.75), the square one gently (0.3).
+## Twin treatment (none — natural colour)
+**All three images keep the photo's natural colour.** They differ only in framing: the twin crops
+slightly wider, the round variant tightest (a circular mask cuts the corners away).
 
-Earlier revisions of this system also called for scanlines, paneling seams, glowing eyes and HUD
-corner brackets. Those belonged to the dark sci-fi theme; the current light theme drops them.
+This is the third iteration and the settled one. Earlier revisions rendered the twin as a cyan HUD
+portrait (scanlines, paneling seams, glowing eyes, corner brackets), then as a restrained blue
+duotone. Both read as *a photo with a filter on it* rather than as a digital twin, and the blue
+version sat awkwardly against the owner's real photo a few lines above it in the same thread.
 
-Tune ramp and levels to taste, but keep the result **recognisably the person**, clearly
-**synthetic**, and **blue** to read as the twin against the full-colour human photo.
+**The twin and the human are separated by their rings, not their colour** — and that separation is
+stronger than a tint ever was, because it survives at 28px:
+
+- `.avatar-twin` — 1.5px blue ring, soft blue halo. Quieter.
+- `.avatar-human` — 2px yellow ring, yellow halo, **plus a spark badge**. The loudest avatar on
+  the page, which is the point: yellow is reserved for the human-in-the-loop.
+
+Each bubble is also name-labelled and tinted (cool for the twin, warm for the human), so the role
+is carried three ways over.
 
 ## Usage
-- Human messages & admin owner chip → `avatar-human.png` in `.avatar-human` (yellow ring).
-- Avatar messages → `avatar-robot-round.png` in `.avatar-twin` (cyan ring).
+- Human messages & admin owner chip → `avatar-human.png` in `.avatar-human` (yellow ring + spark badge).
+- Avatar messages → `avatar-robot-round.png` in `.avatar-twin` (blue ring).
 - Hero / identity showcase → `avatar-robot.png` (framed square).

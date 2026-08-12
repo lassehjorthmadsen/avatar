@@ -96,7 +96,7 @@ Both the visitor chat and the admin dashboard must look and work great on mobile
 
 Ensure that the chat message field takes focus for the user when they bring up the page, and that it regains focus after sending a message (by clicking or by hitting enter).
 
-The image in knowledge/pic.jpg should be used for the Avatar icon for the Human, and a robotic version of it should be used as the Avatar icon for the Avatar, looking like a Digital Twin of the human.
+The image in knowledge/pic.jpg should be used for the Avatar icon for the Human, and a robotic version of it should be used as the Avatar icon for the Avatar, looking like a Digital Twin of the human. *(As built: both are the natural photo, told apart by their rings — see Q&A #7.)*
 
 ## Design System
 
@@ -219,7 +219,7 @@ human-in-the-loop, read/unread, or auth logic.
 
 6. **Admin auth.** `POST /admin/login` with `ADMIN_PASSWORD` returns a signed session token (httpOnly cookie) guarding all `/admin/*` APIs. Visitors stay anonymous, addressed only by an unguessable `conversation_id` UUID held in their cookie (possession of the id = access to that thread).
 
-7. **Avatar's robotic icon.** The human will provide the robotic version of `pic.jpg` separately. `pic.jpg` is the human icon; the robotic image is the Avatar icon.
+7. **Avatar's robotic icon.** *(Superseded.)* Originally the owner was to supply a separately-rendered "robotic" version of `pic.jpg` as the Avatar icon. As built, all avatars are generated from `pic.jpg` by `scripts/generate-avatars.mjs` in **natural colour**, differing only in framing; the twin and the human are distinguished by their rings (blue vs yellow-plus-spark-badge), not by a stylised image. Two tinted treatments were tried and dropped — see `design-system/docs/avatar-generation.md`.
 
 8. **Frontend.** Vanilla TypeScript with Vite — no React/Vue framework.
 

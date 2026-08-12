@@ -9,10 +9,12 @@
  *   avatar-robot.png       the twin, square     (hero / showcase)
  *   avatar-robot-round.png the twin, tuned for circular chat avatars
  *
- * The twin treatment is a restrained blue duotone: luminance mapped through a
- * deep-navy -> link-blue -> near-white ramp, lightly posterised so it reads as
- * a rendering rather than a photograph. No scanlines, HUD brackets or glowing
- * eyes -- those belonged to the dark sci-fi theme this app no longer uses.
+ * All three keep the photo's natural colour. Earlier versions tinted the twin
+ * (first a cyan HUD treatment, then a blue duotone); both read as a filter
+ * rather than a digital twin, so the colour separation was dropped. The twin
+ * and the human are told apart by their rings, not their tint -- .avatar-twin
+ * carries a blue ring, .avatar-human a yellow ring plus a spark badge (see
+ * components.css). The variants differ only in framing.
  *
  * Rendering runs in Playwright's bundled Chromium, so there is no image
  * library to install: the pipeline is plain <canvas>, same as the recipe in
@@ -38,25 +40,14 @@ const FACE = { eyeY: 0.285, centreX: 0.48 };
 /**
  * Per-variant framing. `side` is the crop width as a fraction of the source
  * width (smaller = tighter on the face); `eyeFrac` is where the eye line lands
- * in the output, top-down.
+ * in the output, top-down. The round variant crops tightest, since a circular
+ * mask cuts the corners away.
  */
 const VARIANTS = [
-  { file: 'avatar-human.png', side: 0.81, eyeFrac: 0.44, twin: false },
-  { file: 'avatar-robot.png', side: 0.86, eyeFrac: 0.46, twin: true, vignette: 0.3 },
-  { file: 'avatar-robot-round.png', side: 0.78, eyeFrac: 0.43, twin: true, vignette: 0.75 },
+  { file: 'avatar-human.png', side: 0.81, eyeFrac: 0.44 },
+  { file: 'avatar-robot.png', side: 0.86, eyeFrac: 0.46 },
+  { file: 'avatar-robot-round.png', side: 0.78, eyeFrac: 0.43 },
 ];
-
-/** Duotone ramp: shadows deep navy, midtones the site's link blue, highlights near-white. */
-const RAMP = [
-  [0.0, [10, 28, 56]],
-  [0.25, [30, 69, 133]],
-  [0.5, [69, 130, 236]],
-  [0.75, [157, 192, 245]],
-  [1.0, [244, 248, 254]],
-];
-
-const BANDS = 22; // posterisation steps -- fewer than this and skin tones blotch
-const BLUR = 3; // box-blur radius applied to luminance before quantising
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
@@ -66,7 +57,7 @@ const dataUrl = `data:image/jpeg;base64,${(await readFile(SRC)).toString('base64
 
 for (const v of VARIANTS) {
   const png = await page.evaluate(
-    async ({ dataUrl, v, face, size, ramp, bands, blur }) => {
+    async ({ dataUrl, v, face, size }) => {
       const img = new Image();
       img.src = dataUrl;
       await img.decode();
@@ -95,72 +86,9 @@ for (const v of VARIANTS) {
       ctx.imageSmoothingQuality = 'high';
       ctx.drawImage(cur, 0, 0, size, size);
 
-      if (v.twin) {
-        const id = ctx.getImageData(0, 0, size, size);
-        const d = id.data;
-
-        // Luminance, softened with a box blur so JPEG speckle and skin texture
-        // don't fracture the posterised bands into blotches.
-        const lum = new Float32Array(size * size);
-        for (let i = 0, p = 0; i < d.length; i += 4, p++) {
-          lum[p] = (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]) / 255;
-        }
-        const soft = new Float32Array(size * size);
-        for (let y = 0; y < size; y++) {
-          for (let x = 0; x < size; x++) {
-            let sum = 0, n = 0;
-            for (let dy = -blur; dy <= blur; dy++) {
-              for (let dx = -blur; dx <= blur; dx++) {
-                const yy = y + dy, xx = x + dx;
-                if (yy < 0 || yy >= size || xx < 0 || xx >= size) continue;
-                sum += lum[yy * size + xx];
-                n++;
-              }
-            }
-            soft[y * size + x] = sum / n;
-          }
-        }
-
-        const sample = (t) => {
-          for (let i = 1; i < ramp.length; i++) {
-            if (t <= ramp[i][0]) {
-              const [t0, c0] = ramp[i - 1], [t1, c1] = ramp[i];
-              const f = (t - t0) / (t1 - t0);
-              return [0, 1, 2].map((k) => c0[k] + (c1[k] - c0[k]) * f);
-            }
-          }
-          return ramp[ramp.length - 1][1];
-        };
-
-        const c = (size - 1) / 2;
-        const maxR = Math.hypot(c, c);
-        for (let y = 0; y < size; y++) {
-          for (let x = 0; x < size; x++) {
-            const p = y * size + x;
-            // Mild contrast lift keeps the face from flattening into one band.
-            let t = Math.min(1, Math.max(0, (soft[p] - 0.5) * 1.18 + 0.5));
-            t = Math.round(t * (bands - 1)) / (bands - 1);
-            let [r, g, b] = sample(t);
-
-            // Vignette toward the deep shadow so the busy real-world backdrop
-            // recedes and the face carries the icon at 40px.
-            if (v.vignette) {
-              const rr = Math.hypot(x - c, y - c) / maxR;
-              const fade = Math.min(1, Math.max(0, (rr - v.vignette) / (1 - v.vignette)));
-              const k = fade * fade * 0.85;
-              const [sr, sg, sb] = ramp[0][1];
-              r += (sr - r) * k; g += (sg - g) * k; b += (sb - b) * k;
-            }
-            const i = p * 4;
-            d[i] = r; d[i + 1] = g; d[i + 2] = b;
-          }
-        }
-        ctx.putImageData(id, 0, 0);
-      }
-
       return canvas.toDataURL('image/png').split(',')[1];
     },
-    { dataUrl, v, face: FACE, size: SIZE, ramp: RAMP, bands: BANDS, blur: BLUR }
+    { dataUrl, v, face: FACE, size: SIZE }
   );
 
   const path = resolve(OUT_DIR, v.file);
