@@ -9,9 +9,12 @@ __pycache__/
 .venv/
 backend/.venv/
 
-# Node development artifacts (frontend dist is built inside Docker)
+# Node development artifacts. The frontend dist is built inside Docker
+# (see the frontend-build stage), so a local ./frontend/dist is not just
+# redundant - shipping it in the build context breaks the build.
 frontend/node_modules/
 frontend/.vite/
+frontend/dist/
 
 # Git and tooling
 .git/
