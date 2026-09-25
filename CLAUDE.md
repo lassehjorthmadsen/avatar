@@ -38,6 +38,14 @@ network, not bugs to fix:
   Docker Desktop must be running.
 - `flyctl status` showing one machine `stopped` is **correct, not a fault**:
   `auto_stop_machines = "stop"` with `min_machines_running = 1`.
+- **Supabase (free tier) pauses the project after ~a week of inactivity**, and
+  then *every* chat request 500s — messages are stored before the LLM is
+  called, so even `Qn` answers fail. `.github/workflows/supabase-keepalive.yml`
+  queries it every third day to prevent this; a failed run there is the alert.
+  GitHub disables scheduled workflows after 60 days without repo activity (it
+  emails first) — re-enable it from the Actions tab. To recover a paused
+  project: Restore in the Supabase dashboard (only possible within 90 days),
+  then allow ~2 minutes before it answers.
 - `UV_LINK_MODE=copy` is required (OneDrive hardlink incompatibility).
 - Supabase `conversation_id` is UUID-typed — pass valid UUIDs.
 - Em-dashes in `bash -d` payloads break JSON encoding on Windows; write the JSON
