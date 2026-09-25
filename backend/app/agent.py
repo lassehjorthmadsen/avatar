@@ -220,6 +220,11 @@ def create_agent() -> Agent:
     low a cap and the reply comes back empty. Low reasoning effort keeps most
     of the budget (and the latency) on the answer itself, which is what a
     conversational twin needs.
+
+    4000 leaves several times a typical reply (a few hundred tokens) plus low
+    reasoning, while keeping the reserved worst case small: at 16000 the chat
+    refused every request with a 402 while the balance still covered several
+    ordinary replies.
     """
     return Agent(
         name="Avatar",
@@ -227,7 +232,7 @@ def create_agent() -> Agent:
         instructions=SYSTEM_PROMPT,
         tools=[faq_tool, push_tool],
         model_settings=ModelSettings(
-            max_tokens=16000,
+            max_tokens=4000,
             reasoning=Reasoning(effort="low"),
         ),
     )

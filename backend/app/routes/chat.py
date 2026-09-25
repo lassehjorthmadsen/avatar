@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import re
 
 from fastapi import APIRouter, HTTPException, Request
@@ -27,6 +28,17 @@ from app.database import (
 )
 
 router = APIRouter(prefix="/api")
+logger = logging.getLogger(__name__)
+
+# What the visitor sees when the model call fails. The real exception goes to
+# the server log only: it can carry provider account details (an OpenRouter 402
+# includes the account's user ID) that must not reach the browser.
+VISITOR_ERROR = "The chat is temporarily unavailable. Please try again in a little while."
+
+
+def _error_event(err: Exception) -> str:
+    logger.error("Agent run failed", exc_info=err)
+    return f"data: {json.dumps({'type': 'error', 'error': VISITOR_ERROR})}\n\n"
 
 # Rate limiting: 20 messages per minute per conversation_id
 _storage = MemoryStorage()
@@ -133,10 +145,10 @@ async def chat(body: ChatRequest):
                     tools_used.extend(fallback_tools)
                     yield f"data: {json.dumps({'type': 'text', 'content': full_response})}\n\n"
                 except Exception as fallback_err:
-                    yield f"data: {json.dumps({'type': 'error', 'content': str(fallback_err)})}\n\n"
+                    yield _error_event(fallback_err)
                     return
             else:
-                yield f"data: {json.dumps({'type': 'error', 'content': str(e)})}\n\n"
+                yield _error_event(e)
 
         # A stream that completes without emitting any text is a failure too —
         # retry once without streaming rather than leaving the visitor hanging.
@@ -147,7 +159,7 @@ async def chat(body: ChatRequest):
                 if full_response:
                     yield f"data: {json.dumps({'type': 'text', 'content': full_response})}\n\n"
             except Exception as fallback_err:
-                yield f"data: {json.dumps({'type': 'error', 'content': str(fallback_err)})}\n\n"
+                yield _error_event(fallback_err)
                 return
 
         # Store the complete assistant response. Firing push_tool means the
