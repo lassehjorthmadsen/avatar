@@ -1,0 +1,24 @@
+# Supabase pauses free-tier projects after about a week without activity, and a
+# paused database takes the whole chat down (every message is stored before the
+# LLM is called). This happened in September 2026. Reading a conversation through
+# the public API runs a real query, which counts as activity — no secrets needed.
+#
+# A failed run means the database is unreachable (paused, or credentials broken),
+# and GitHub emails the repo owner about it, so this doubles as an alert.
+name: Supabase keepalive
+
+on:
+  schedule:
+    - cron: "17 6 */3 * *" # every third day, 06:17 UTC
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Query the database through the app
+        run: |
+          # Any valid UUID works; an unknown conversation returns an empty list.
+          # --retry covers a Fly machine waking up from auto-stop.
+          curl --fail --silent --show-error --retry 3 --retry-delay 20 --retry-all-errors \
+            https://avatar.tekstogtal.dk/api/conversation/00000000-0000-4000-8000-000000000000
