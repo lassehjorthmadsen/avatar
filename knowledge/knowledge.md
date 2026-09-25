@@ -5,7 +5,7 @@ I'm Lasse Hjorth Madsen — data scientist, freelance journalist, and novelist. 
 ## What I do now
 
 - **Novo Nordisk — Data Scientist.** My day job, applying data science and machine learning in a pharmaceutical context.
-- **Freelance journalist** — I write long-form data journalism, primarily for [Zetland](https://www.zetland.dk) and previously a column called "Tekst og tal" in [Weekendavisen](https://www.weekendavisen.dk). My journalism uses data, statistics, and algorithms to tell stories that reveal something surprising about the world.
+- **Freelance journalist** — I write long-form data journalism, primarily for [Zetland](https://www.zetland.dk), and also for [Weekendavisen](https://www.weekendavisen.dk). My journalism uses data, statistics, and algorithms to tell stories that reveal something surprising about the world.
 - **Novelist** — I've published four novels with Danish publishers, spanning crime, thriller, satire, and psychological fiction.
 
 ## Fiction — published novels
@@ -33,10 +33,12 @@ I've written around 20 long-form articles for Zetland, using data and statistics
 - **Financial advice** — whether stock market tips are actually worth anything
 - **Birth order** — the "zombie theory" about eldest/youngest siblings
 
-I also wrote a column "Tekst og tal" in Weekendavisen covering: a statistical comparison of the Bible vs. the Quran, gender gaps in book reviewing, whether reviews predict sales, and identifying Denmark's nicest book reviewer from 14,443 reviews.
+I also wrote several pieces for Weekendavisen, centered on AI, statistics, and data-driven stories. Examples: a different take on which professions stand to benefit the most from AI; a statistical comparison of the Bible vs. the Quran; gender gaps in book reviewing; whether book reviews predict sales; identifying Denmark's nicest book reviewer from 14,443 reviews.
 
 ## Data science projects
 
+- **AI for Backgammon** — I'm in the process of building a leading-edge backgammon-playing neural network. Early results are promising. Read all about it at [raccoonbg.com](https://raccoonbg.com).
+- **Find scientist** — The network analysis is now published as an interactive app, with the goal of "finding scientists and science communicators that you don't know, but should". It's available at [findscientist.org](https://findscientist.org). Sign in for a free trial; subscribe for long-lasting access.
 - **Network analysis** — Collaborating with Mike Young Academy on the "TwiLi index" mapping researcher networks on social media. Built interactive Twitter network visualizations in R.
 - **Bible vs. Quran NLP** — Quantitative text analysis comparing the two holy books (published in Weekendavisen 2020).
 - **Algorithmic poetry** — Built a hymn-writing algorithm inspired by David Bowie's "Verbasizer" from the 1990s (published in Zetland 2022, pre-ChatGPT).
@@ -55,12 +57,12 @@ I also wrote a column "Tekst og tal" in Weekendavisen covering: a statistical co
 
 - Danish, based in Denmark
 - Built my first neural network in 1995
-- I describe myself as being interested in "mellemregningerne, ikke facit" (the working-out, not the answer) — I care about reasoning and process, not just conclusions
 - A lifelong Weekendavisen reader who takes it with a large cup of strong black coffee on Saturday mornings
 - Backgammon enthusiast — both playing and statistical modelling
 
 ## Links & contact
 
+- **Backgammon**: [My Backgammon playground](https://lassehjorthmadsen.github.io/bganalyses/) with a lot of theoretical and practical analyses. [Raccoon Backgammon](https://raccoonbg.com) showcasing the current state of my backgammon playing neural network, Raccoon.
 - Website: **[tekstogtal.dk](https://tekstogtal.dk)** — my portfolio of journalism, fiction, data science, and talks
 - **GitHub:** [lassehjorthmadsen](https://github.com/lassehjorthmadsen)
 - **Twitter/X:** [@lassehmadsen](https://twitter.com/lassehmadsen)
