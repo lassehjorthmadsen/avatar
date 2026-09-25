@@ -55,7 +55,14 @@ def faq_tool(question_number: int) -> str:
     Args:
         question_number: The FAQ number to look up
     """
-    return _find_faq(question_number)
+    # The FAQ is English and its text is the last thing the model reads before
+    # replying, so without this note Danish questions routed here get English
+    # answers. (Qn instant answers use _find_faq directly and skip the note.)
+    return (
+        _find_faq(question_number)
+        + "\n\n(This FAQ text is in English. Reply in the language of the "
+        "visitor's most recent message; if that is Danish, translate it.)"
+    )
 
 
 @function_tool
