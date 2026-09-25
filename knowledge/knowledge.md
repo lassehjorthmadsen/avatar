@@ -43,7 +43,7 @@ I also wrote several pieces for Weekendavisen, centered on AI, statistics, and d
 - **Bible vs. Quran NLP** — Quantitative text analysis comparing the two holy books (published in Weekendavisen 2020).
 - **Algorithmic poetry** — Built a hymn-writing algorithm inspired by David Bowie's "Verbasizer" from the 1990s (published in Zetland 2022, pre-ChatGPT).
 - **Gender in publishing** — Multiple data-driven analyses of gender disparity in Danish book reviewing.
-- **Backgammon R package** — An R package for plotting and analysing backgammon positions: [lassehjorthmadsen.github.io/bglab/](https://lassehjorthmadsen.github.io/bglab/). I also maintain an analysis blog at [lassehjorthmadsen.github.io/bganalyses/](https://lassehjorthmadsen.github.io/bganalyses/). Backgammon is one of my favourite hobbies.
+- **bglab R package** — An R package for plotting and analysing backgammon positions: [lassehjorthmadsen.github.io/bglab/](https://lassehjorthmadsen.github.io/bglab/). I also maintain an analysis blog at [lassehjorthmadsen.github.io/bganalyses/](https://lassehjorthmadsen.github.io/bganalyses/). Backgammon is one of my favourite hobbies.
 - **Phonetic rhyme dictionary** (planned) — A Danish rhyme dictionary that matches on pronunciation, not spelling ("Kys rimer ikke på lys").
 
 ## Talks and presentations

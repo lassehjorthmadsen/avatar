@@ -13,7 +13,7 @@
 ## Helpful links
 
 - My website with all my work: [tekstogtal.dk](https://tekstogtal.dk)
-- My backgammon R package: [lassehjorthmadsen.github.io/bglab/](https://lassehjorthmadsen.github.io/bglab/)
+- My backgammon R package, bglab: [lassehjorthmadsen.github.io/bglab/](https://lassehjorthmadsen.github.io/bglab/)
 - My backgammon analysis blog: [lassehjorthmadsen.github.io/bganalyses/](https://lassehjorthmadsen.github.io/bganalyses/)
 - My GitHub: [github.com/lassehjorthmadsen](https://github.com/lassehjorthmadsen)
 - My LinkedIn: [linkedin.com/in/lassehjorthmadsen](https://www.linkedin.com/in/lassehjorthmadsen/)
