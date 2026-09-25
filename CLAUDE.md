@@ -32,10 +32,13 @@ network, not bugs to fix:
   startup) fixes host-side Python; any ad-hoc script hitting the network needs it too.
 - **`curl` may still work where Python's `httpx` does not.** Handy for ad-hoc
   Supabase reads/deletes via the PostgREST REST API when the Python client can't connect.
-- **`flyctl` is not on PATH** on the owner's machine — it lives at `~/.fly/bin/flyctl.exe`.
-- **Deploy with `--local-only`.** Both fly.io remote builders fail behind the
-  proxy (depot: gRPC `handshake failed: EOF`; classic: npipe parse error).
-  Docker Desktop must be running.
+- **`flyctl` is not on PATH** on the owner's machines — it lives at `~/.fly/bin/flyctl.exe`.
+  `flyctl auth login` needs a real interactive terminal (not an agent's shell).
+- **Behind the corporate proxy, deploy with `--local-only`.** Both fly.io remote
+  builders fail there (depot: gRPC `handshake failed: EOF`; classic: npipe
+  parse error), and Docker Desktop must be running. Off the proxy the default
+  remote build works and needs no local Docker — the home machine has none and
+  deployed this way in September 2026.
 - `flyctl status` showing one machine `stopped` is **correct, not a fault**:
   `auto_stop_machines = "stop"` with `min_machines_running = 1`.
 - **Supabase (free tier) pauses the project after ~a week of inactivity**, and
@@ -62,7 +65,7 @@ and `.dockerignore`d) and pipe them straight to `flyctl`.
 
 Note that `scripts/deploy.sh` stages secrets from `.env` as part of its run. To
 deploy code *without* a secrets write, bypass it:
-`flyctl deploy --local-only -c scripts/fly.toml`.
+`flyctl deploy -c scripts/fly.toml --dockerfile Dockerfile --ha=false`.
 
 ## Appearance
 
