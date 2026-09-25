@@ -207,6 +207,14 @@ def build_conversation_prompt(messages: list[dict]) -> str:
             lines.append(f"[Avatar]: {content}")
         elif role == "human":
             lines.append(f"[Human ({OWNER_NAME})]: {content}")
+    # The language rule in the system prompt sits thousands of tokens above the
+    # question, behind a knowledge base and an FAQ that are mostly English, and
+    # small models drift into English on Danish questions. Restating it last,
+    # right after the message it applies to, is what they actually follow.
+    lines.append(
+        "(Reply as the Avatar, in the same language as the visitor's most "
+        "recent message above: Danish if it is Danish, English if it is English.)"
+    )
     return "\n\n".join(lines)
 
 
