@@ -81,7 +81,7 @@ Automated as `test/e2e.spec.ts` (16 Playwright tests, run against production):
 | # | Defect | Fix |
 |---|--------|-----|
 | 1 | Streamed replies were always empty. The handler watched for `chunk.choices`, but the Agents SDK normalises OpenRouter's chat-completion chunks into Responses-API events, so no text was ever collected. | Match `ResponseTextDeltaEvent` in `backend/app/agent.py`. |
-| 2 | OpenRouter rejected every request with 402. Without `max_tokens` it reserves the model's full context and refuses if the balance can't cover the worst case. | Set `max_tokens=16000` plus `reasoning=Reasoning(effort="low")` — the budget must also cover reasoning tokens, which are spent before any visible text. |
+| 2 | OpenRouter rejected every request with 402. Without `max_tokens` it reserves the model's full context and refuses if the balance can't cover the worst case. | Set `max_tokens=16000` plus `reasoning=Reasoning(effort="low")` — the budget must also cover reasoning tokens, which are spent before any visible text. (Lowered to 4000 in #14.) |
 | 3 | "Keep chat" restored a thread with the visitor's own messages missing. The frontend tested `role === 'visitor'`, but the database stores `'user'`, so visitor messages fell through to the avatar branch. | Correct the role check in `frontend/src/main.ts`. |
 | 4 | `push_tool` never flagged the thread — `needs_attention` was hardcoded `False`, so admin had no "needs you" signal (violating SPEC Q&A #5). | Thread `tools_used` through `chat.py` and set `needs_attention="push_tool" in tools_used`. |
 | 5 | Every icon rendered as a solid black blob. The sprite is stroke-drawn, but its `<defs>` was empty — the mockups had inlined the stroke styling, which didn't travel to the externally-referenced `icons.svg`. | Move the rule into `icons.svg`, and set `fill`/`stroke` on `.icon` as a bundler-proof fallback. |
@@ -102,6 +102,17 @@ contrast rather than trusting the design pass: `--text-faint` `#888888` ->
 `#767676` (3.54 -> 4.54) and `--role-avatar` `#1b95a6` -> `#0f7180`
 (3.56 -> 5.68). Both carry timestamps, labels and the twin's name, and both now
 clear WCAG AA.
+
+### Maintenance, 2026-09-25 (found on the live site)
+
+| # | Defect | Fix |
+|---|--------|-----|
+| 12 | Every chat request returned 500, including `Qn` answers: Supabase had paused the free-tier project after a week without traffic, and messages are stored before the LLM is called. | Restored in the dashboard; `.github/workflows/supabase-keepalive.yml` now queries it every third day, and a failed run is the alert. |
+| 13 | Error events sent `str(exception)` to the browser in `content`, a field the frontend never read (it reads `error`) — visitors saw a generic toast while the raw OpenRouter error, account user ID included, sat in the SSE stream. | `_error_event()` in `chat.py` sends a fixed message in `error` and logs the exception server-side. |
+| 14 | With the balance at ~$0.035, every request got a 402: `max_tokens=16000` reserved more than the balance, which still covered several ordinary replies. | Credit topped up; `max_tokens` lowered to 4000 (a 1,155-character reply verified untruncated). |
+| 15 | Danish questions often got English answers. The FAQ is English and the prompt said to return answers "as written"; after a `faq_tool` call the English FAQ text is the last thing the model reads. | `MODEL` secret nano -> `gpt-5.4-mini`; the language rule is restated after the conversation and appended to every `faq_tool` result. Verified 5/5 Danish. One known miss: "What is tekstogtal.dk?" (English) is answered in Danish. |
+
+- [ ] 19 `claude-test` conversations from these checks still to delete via `/admin`
 
 ## 7. Cleanup
 

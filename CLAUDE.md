@@ -39,6 +39,9 @@ network, not bugs to fix:
   parse error), and Docker Desktop must be running. Off the proxy the default
   remote build works and needs no local Docker — the home machine has none and
   deployed this way in September 2026.
+- **The home machine has no `uv`, no Docker and no proxy** (so no `truststore`
+  needed for ad-hoc scripts). Backend tests can't run there without installing
+  `uv`; verify against the deployed app instead.
 - `flyctl status` showing one machine `stopped` is **correct, not a fault**:
   `auto_stop_machines = "stop"` with `min_machines_running = 1`.
 - **Supabase (free tier) pauses the project after ~a week of inactivity**, and
